@@ -13,7 +13,9 @@
 {% endif %}
 
 <div class="{{ include.type | default: "list" }}__item">
+  <ul>
   <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    <li>
     {% if include.type == "grid" and teaser %}
       <div class="archive__item-teaser">
         <img src=
@@ -38,27 +40,85 @@
       <p class="page__meta"><i class="fa fa-clock-o" aria-hidden="true"></i> {% include read-time.html %}</p>
     {% endif %}
 
-        {% if post.collection == 'teaching' %}
-          <p> {{ post.type }}, <i>{{ post.venue }}</i>, {{ post.date | default: "1900-01-01" | date: "%Y" }} </p>
-        {% elsif post.collection == 'publications' %}
-          <p>Published in <i>{{ post.venue }}</i>, {{ post.date | default: "1900-01-01" | date: "%Y" }} </p>
-        {% elsif post.date %}
-         <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].date_label | default: "Published:" }}</strong> <time datetime="{{ post.date | default: "1900-01-01" | date_to_xmlschema }}">{{ post.date | default: "1900-01-01" | date: "%B %d, %Y" }}</time></p>
+      {% if post.collection == 'teaching' %}
+        <p> {{ post.type }}, <i>{{ post.venue }}</i>, {{ post.date | default: "1900-01-01" | date: "%Y" }} </p>
+      {% elsif post.collection == 'publications' %}
+        <!-- <p>Published in <i>{{ post.venue }}</i>, {{ post.date | default: "1900&#45;01&#45;01" | date: "%Y" }} </p> -->
+        <!-- <br> -->
+        {{ post.authors }}
+        <br>
+        {% if post.venue_type == 'conference' %}
+          <img src="/images/conference.svg" width="25" alt="Conference">
+        {% elsif post.venue_type == 'workshop' %}
+          <img src="/images/workshop.svg" width="25" alt="Workshop">
+        {% endif %}
+        {% if post.venue_url %}
+          <strong><a href="{{ post.venue_url }}">{{ post.conf_shorthand }} {{ post.date | default: "1900-01-01" | date: "%Y" }}</a></strong>
+        {% else %}
+          <strong>{{ post.conf_shorthand }} {{ post.date | default: "1900-01-01" | date: "%Y" }}</strong>
         {% endif %}
 
-    {% if post.excerpt and site.read_more != 'enabled' %}
-    <p class="archive__item-excerpt" itemprop="description">{{ post.excerpt | markdownify }}</p>
-    {% elsif post.excerpt and site.read_more == 'enabled' %}
-    <p class="archive__item-excerpt" itemprop="description"><p>{{ post.excerpt | markdownify | remove: '<p>' | remove: '</p>' }}<strong><a href="{{ base_path }}{{ post.url }}" rel="permalink"> Read more</a></strong></p></p>
-    {% endif %}
-    
-    {% if post.citation and post.paperurl %}
-      <p>Recommended citation: {{ post.citation }} <a href="{{ post.paperurl }}"><u>{{ post.paperurl }}</u></a></p>
-    {% elsif post.citation %}
-      <p>Recommended citation: {{ post.citation }} </p>
-    {% elsif post.paperurl %}
-      <p>Download <a href=" {{ post.paperurl }} "><u>here</u></a></p>
-    {% endif %}
+        <!-- Acceptance Rate -->
+        {% if post.acceptance_papers_submitted and post.acceptance_papers_accepted %}
+          Acceptance rate:
+          {{ post.acceptance_papers_accepted | times: 1.0 | divided_by: post.acceptance_papers_submitted | times: 100 | round: 1 }}%
+          ({{ post.acceptance_papers_accepted }}/{{ post.acceptance_papers_submitted }})
+        {% elsif post.acceptance_rate %}
+          (Acceptance rate: {{ post.acceptance_rate | times: 100 | round: 1 }}%)
+        {% endif %}
 
+      {% elsif post.date %}
+       <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].date_label | default: "Published:" }}</strong> <time datetime="{{ post.date | default: "1900-01-01" | date_to_xmlschema }}">{{ post.date | default: "1900-01-01" | date: "%B %d, %Y" }}</time></p>
+      {% endif %}
+
+      {% if post.github_url %}
+        <br>
+        <img src="/images/GitHub-Mark-32px.png" width="25" alt="GitHub">
+        {% if post.system_name %}
+          <font color="red"><b><a href="{{ post.github_url }}">{{ post.system_name }} is open source!</a></b></font>
+        {% else %}
+          <font color="red"><b><a href="{{ post.github_url }}">Download on github!</a></b></font>
+        {% endif %}
+      {% endif %}
+
+      <!-- PDF -->
+      {% if post.abstract and post.paperurl %}
+        <br>
+        <font color="#0000EE"><a href="{{ post.abstract }}">Abstract</a></font>
+        /
+        <img src="/images/pdf-file.svg" width="25" alt="PDF">
+        <font color="#0000EE"><strong><a href="{{ post.paperurl }}">Full Text</a></strong></font>
+      {% elsif post.paperurl %}
+        <br>
+        <img src="/images/pdf-file.svg" width="25" alt="PDF">
+        <font color="#0000EE"><strong><a href="{{ post.paperurl }}">Full Text</a></strong></font>
+      {% endif %}
+
+      <!-- BibTeX -->
+      {% if post.bibtex_url %}
+        <br>
+        <img src="/images/tex.svg" width="25" alt="BibTeX">
+        <strong><a href="{{ post.bibtex_url }}">Citation</a></strong>
+      {% endif %}
+
+
+      {% if post.excerpt == /^\s*$/ %}
+        {% if site.read_more != 'enabled' %}
+          <p class="archive__item-excerpt" itemprop="description">{{ post.excerpt | markdownify }}</p>
+        {% elsif site.read_more == 'enabled' %}
+          <p class="archive__item-excerpt" itemprop="description"><p>{{ post.excerpt | markdownify | remove: '<p>' | remove: '</p>' }}<strong><a href="{{ base_path }}{{ post.url }}" rel="permalink"> Read more</a></strong></p></p>
+        {% endif %}
+      {% endif %}
+
+    <!-- {% if post.citation and post.paperurl %} -->
+    <!--   <p>Recommended citation: {{ post.citation }} <a href="{{ post.paperurl }}"><u>{{ post.paperurl }}</u></a></p> -->
+    <!-- {% elsif post.citation %} -->
+    <!--   <p>Recommended citation: {{ post.citation }} </p> -->
+    <!-- {% elsif post.paperurl %} -->
+    <!--   <p>Download <a href=" {{ post.paperurl }} "><u>here</u></a></p> -->
+    <!-- {% endif %} -->
+
+    </li> 
   </article>
+  </ul>
 </div>

@@ -1,3 +1,5 @@
 _site/
 /gem
 Gemfile.lock
+/.idea
+/venv
