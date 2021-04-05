@@ -81,6 +81,18 @@
         {% endif %}
       {% endif %}
 
+      {% if post.full_talk_url %}
+        <br>
+        <img src="/images/youtube_icon.svg" width="25" alt="YouTube">
+        <b><a href="{{ post.full_talk_url }}">Full talk</a></b>
+      {% endif %}
+
+      {% if post.lightning_talk_url %}
+        <br>
+        <img src="/images/youtube_icon.svg" width="25" alt="YouTube">
+        <b><a href="{{ post.lightning_talk_url }}">Lightning talk</a></b>
+      {% endif %}
+
       <!-- PDF -->
       {% if post.abstract and post.paperurl %}
         <br>
