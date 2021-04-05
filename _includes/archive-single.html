@@ -85,12 +85,22 @@
         <br>
         <img src="/images/youtube_icon.svg" width="25" alt="YouTube">
         <b><a href="{{ post.full_talk_url }}">Full talk</a></b>
+        {% capture now_unix %}{{ 'now' | date: '%s' }}{% endcapture %}
+        {% capture post_date %}{{ post.full_talk_release_date | date: '%s' }}{% endcapture %}
+        {% if now_unix < post_date  %}
+          (available starting: {{ post_date | date: '%A, %B %e, %I:%M %p %Z' }})
+        {% endif %}
       {% endif %}
 
       {% if post.lightning_talk_url %}
         <br>
         <img src="/images/youtube_icon.svg" width="25" alt="YouTube">
         <b><a href="{{ post.lightning_talk_url }}">Lightning talk</a></b>
+        {% capture now_unix %}{{ 'now' | date: '%s' }}{% endcapture %}
+        {% capture post_date %}{{ post.lightning_talk_release_date | date: '%s' }}{% endcapture %}
+        {% if now_unix < post_date  %}
+          (available starting: {{ post_date | date: '%A, %B %e, %I:%M %p %Z' }})
+        {% endif %}
       {% endif %}
 
       <!-- PDF -->
